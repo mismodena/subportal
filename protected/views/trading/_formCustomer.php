@@ -1,0 +1,170 @@
+<div class="form">
+            
+    <?php $form=$this->beginWidget('CActiveForm', array(
+        'id'=>'customer-trading-form',
+		'enableAjaxValidation' => false,
+        'enableClientValidation'=>true, 
+    )); ?>
+
+	<p class="note">Fields with <span class="required">*</span> are required.</p>
+
+	<?php 
+       
+        echo $form->errorSummary($model); ?>
+        
+        <div class="group">    
+            <?php
+                if ($model->isNewRecord){ 
+                    echo Yii::t('ui', 'New Customer Term');
+                }else{
+                    echo Yii::t('ui', 'Update Customer Term');
+                } 
+            ?>
+        </div>
+        <div>
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'idCust'); ?>
+                <?php
+                    $this->widget('ext.widgets.select2.XSelect2', array(
+                        'model'=>$model,
+                        'attribute'=>'idCust',
+                        'data'=>  Utility::getCustGroup2(),
+                        'htmlOptions'=>array(
+                                'style'=>'width:295px',
+                                'empty'=>'',
+                                'placeholder'=>'-- Customer Group Code --',
+                                'disabled' => $model->isNewRecord ? '' : 'disabled',
+                        ),
+                    ));
+                ?>
+                <?php echo $form->error($model, 'idCust'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'isTT'); ?>
+                <?php      
+                    $data = array(1 => "Modern TT" , 3 => "Modern Non TT");
+                    $this->widget('ext.widgets.select2.XSelect2', array(
+                        'model'=>$model,
+                        'attribute'=>'isTT',
+                        'data'=> $data,
+                        'htmlOptions'=>array(
+                                'style'=>'width:295px',
+                                'placeholder'=>'-- Tipe --',
+                        ),
+                    ));
+                ?>
+                <?php echo $form->error($model, 'isTT'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'termDesc'); ?>
+                <?php echo $form->textArea($model, 'termDesc', array('cols' => 40, 'rows' => 6, 'placeholder' => '-- Deskripsi --')); ?>
+                <?php echo $form->error($model, 'termDesc'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'periodStart'); ?>
+                <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                    'model' => $model,
+                    'attribute' => 'periodStart',
+                    'options' => array(
+                        'showAnim' => 'fold',
+                        'dateFormat' => 'yy-mm-dd', // save to db format
+                        'altField' => '#self_pointing_id',
+                        //'altFormat' => 'dd-mm-yy', // show to user format
+                        'showOtherMonths' => true,      // show dates in other months
+                        'selectOtherMonths' => true,    // can seelect dates in other months
+                        'changeYear' => true,           // can change year
+                        'changeMonth' => true,          // can change month
+                        //'yearRange' => '2000:2099',     // range of year   
+                    ),
+                    'htmlOptions' => array(
+                        'style' => 'height:20px;'
+                    ),
+                ));?>
+                <?php echo $form->error($model, 'periodStart'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'periodEnd'); ?>
+                <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                    'model' => $model,
+                    'attribute' => 'periodEnd',
+                    'options' => array(
+                        'showAnim' => 'fold',
+                        'dateFormat' => 'yy-mm-dd', // save to db format
+                        'altField' => '#self_pointing_id',
+                        //'altFormat' => 'dd-mm-yy', // show to user format
+                        'showOtherMonths' => true,      // show dates in other months
+                        'selectOtherMonths' => true,    // can seelect dates in other months
+                        'changeYear' => true,           // can change year
+                        'changeMonth' => true,          // can change month
+                        //'yearRange' => '2000:2099',     // range of year   
+                    ),
+                    'htmlOptions' => array(
+                        'style' => 'height:20px;'
+                    ),
+                ));?>
+                <?php echo $form->error($model, 'periodEnd'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo CHtml::label("Payment Term", "Payment Term"); ?>
+                Existing :<?php echo $form->textField($model,'payTermExisting',array('size' => 3, 'maxlength' => 25,)); ; ?> &nbsp;&nbsp;New :
+                <?php echo $form->textField($model,'payTermNew',array('size' => 3, 'maxlength' => 25,)); ; ?>
+                <?php echo $form->error($model, 'payTermExisting'); ?>
+            </div> 
+            <div class="simple">
+                <?php echo $form->labelEx($model, 'sellingTarget'); ?>
+                <?php echo $form->textField($model,'sellingTarget',array('size' => 40, 'maxlength' => 50,)); ; ?>
+                <?php echo $form->error($model, 'sellingTarget'); ?>
+            </div> 
+
+            <br/>
+            <div class="group">
+                <?php echo Yii::t('ui', 'Trading Term'); ?>
+            </div>           
+            <br />
+
+        </div>
+        <div class="simple">
+            <?php 
+                $this->widget('ext.widgets.tabularinput.XTabularInput', array(
+                    'id'=>'tableTrading',
+                    'models' => $model->details,
+                    'containerTagName' => 'table',
+                    'headerTagName' => 'thead',
+                    'header' => '
+                                <tr>
+                                    <th>Kode</th>
+                                    <th>Deskripsi</th>
+                                    <th>Sell In / Out</th>
+                                    <th>Periode Klaim</th>
+                                    <th>Penjualan</th>
+                                    <th>s/d</th>
+                                    <th>(%)</th>
+                                    <th>Pricelist?</th>
+                                </tr>
+                    ',
+                    'inputContainerTagName' => 'tbody',
+                    'inputTagName' => 'tr',
+                    'inputView' => '/site/extensions/_tabularTrading',
+                    'inputUrl' => $this->createUrl('request/addTabTrading'),
+                    'isAddOk' => false,
+                    'isRemoveOk' => false,
+                    //'addTemplate' => '<tbody><tr><td colspan="2">{link}</td></tr></tbody>',
+                    //'addLabel' => Yii::t('ui', 'Tambah'),
+                    //'addHtmlOptions' => array('class' => 'blue pill full-width'),
+                    //'removeTemplate' => '<td>{link}</td>',
+                    //'removeLabel' => Yii::t('ui', 'Hapus'),
+                    
+                ));
+            ?>
+        </div>  
+	<div class="row buttons">
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Save!' : 'Simpan');                 ?>
+            
+	</div>
+
+<?php $this->endWidget();        
+
+?>
+
+</div><!-- form -->
+

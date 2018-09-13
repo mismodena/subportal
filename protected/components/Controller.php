@@ -1,0 +1,208 @@
+<?php
+
+class Controller extends RController {
+
+    /**
+     * @var array the breadcrumbs of the current page.
+     */
+    public $breadcrumbs = array();
+
+    /**
+     * @var array context menu items.
+     */
+    public $menu = array();
+
+    /**
+     * @var array the portlets of the current page.
+     */
+    public $leftPortlets = array();    
+    public $rightPortlets = array();
+
+    /**
+     * @var array the ips of privilege.
+     */
+        
+    public $ips = array(
+        '127.0.0.1',
+        '::1', // localhost
+    );
+
+    /**
+     * initialize
+     */
+    function init() {
+        parent::init();
+        if (Yii::app()->getRequest()->getParam('printview'))
+            Yii::app()->layout = 'print';
+    }
+
+    /**
+     * @return array behaviors
+     */
+    public function behaviors() {
+        return array(
+            'returnable' => array(
+                'class' => 'ext.behaviors.XReturnableBehavior',
+            ),
+        );
+    }
+
+    /**
+     * @return boolean true if request IP matches given pattern, otherwise false
+     */
+    public function isIpMatched() {
+        $ip = Yii::app()->request->userHostAddress;
+
+        foreach ($this->ips as $rule) {
+            if ($rule === '*' || $rule === $ip || (($pos = strpos($rule, '*')) !== false && !strncmp($ip, $rule, $pos)))
+                return true;
+        }
+        return false;
+    }
+
+    /*
+     * Fungsi kirim email
+     */
+
+    public function mailSend($to = array(), $cc = array(), $bcc = array(),$subject, $message, $attachment = array()) 
+    {
+        ini_set('max_execution_time',300);
+        $from = 'support@modena.co.id';
+        $from_name = 'Support';
+        $mail = Yii::app()->Smtpmail;
+        //$mail = new PHPMailer();
+		//echo "<pre>\n";
+		
+		//print_r($mail);
+		//echo "</pre>\n";
+		//exit();
+        $mail->SetFrom($from, $from_name);
+        $mail->Subject = $subject;
+        $mail->MsgHTML($message);
+        if (!empty($to)) {
+            foreach ($to as $email) {
+                $mail->AddAddress($email);
+            }
+        }
+        if (!empty($cc)) {
+            foreach ($cc as $email) {
+                $mail->AddCC($email);
+            }
+        }
+         
+        if (!empty($bcc)) {
+            foreach ($bcc as $email) {
+                $mail->AddBCC($email);
+            }
+        }
+        if (!empty($attachment)) {
+            foreach ($attachment as $attach) {
+                $mail->AddAttachment($attach);
+            }
+        }
+        if (!$mail->Send()) {
+            echo $mail->ErrorInfo;
+			exit();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function mailsendMAT($to = array(), $bcc = array(),$subject, $message, $attachment = array()) 
+    {
+        $from = 'support@modena.co.id';
+        $from_name = 'Support';
+        $mail = Yii::app()->Smtpmail;
+        $mail->SetFrom($from, $from_name);
+        $mail->Subject = $subject;
+        $mail->MsgHTML($message);
+        if (!empty($to)) {
+            foreach ($to as $email) {
+                $mail->AddAddress($email);
+            }
+        }
+        if (!empty($bcc)) {
+            foreach ($bcc as $email) {
+                $mail->AddBCC($email);
+            }
+        }
+        if (!empty($attachment)) {
+            foreach ($attachment as $attach) {
+                $mail->AddAttachment($attach);
+            }
+        }
+        
+        if (!$mail->Send()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /*
+     * Fungsi amnbil template email
+     */
+
+    public function mailTemplate($par) {
+        switch ($par) {
+            case 1: /* Approval */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "FppMailTemplate.html");
+                break;
+            case 2: /* Accounting */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "FppMailTemplateAcct.html");
+                break;
+            case 3: /* CN */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "CNApprovalTemplate.html");
+                break;
+            case 4: /* Finance */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "FppMailTemplateFinance.html");
+                break;
+            case 5: /* Kontrak */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "ContractConfirmation.html");
+                break;
+            case 6: /* Verifikasi PI */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "verifyPI.html");
+                break;
+            case 7: /* Approval MAT */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "approvalMAT.html");
+                break;
+            case 8: /* Approval Disposal */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "approvalDisposal.html");
+                break;
+            case 9: /* Note Accounting - disposal */
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "approvalDisposalAcc.html");
+                break;
+            case 10: /* Notifikasi Asset*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "notifikasiAsset.html");
+                break;
+            case 11: /* Email Pemberitahuan Penerima Asset : Dept Head Penerima Asset*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "approvalPenerimaMAT.html");
+                break;
+            case 12: /* Email Document Control*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "DocumentTemplate.html");
+                break;
+            case 13: /* Email NP Request*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "NPRequest.html");
+                break;
+            case 14: /* Email NP Realisasi*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "NPRealisasi.html");
+                break;
+            case 15: /* Open TQ*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "BQOpenTemplate.html");
+                break;
+            case 16: /* Open TQ*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "BQClaimTemplate.html");
+                break;
+            case 17: /* Open TQ*/
+                $string = file_get_contents(Yii::getPathOfAlias('webroot.templates') . DIRECTORY_SEPARATOR . "BQUploadTemplate.html");
+                break;
+            default :
+                break;
+        }
+        return $string;
+    }
+
+}
+
+?>

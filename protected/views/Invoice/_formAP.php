@@ -1,0 +1,517 @@
+<div class="form">
+    <?php $form=$this->beginWidget('CActiveForm', array(
+        'id'=>'inv-header-form',
+        'enableAjaxValidation' => true,
+        'enableClientValidation'=>true,
+    )); 
+    Yii::app()->clientScript->registerCoreScript('jquery');
+    Yii::app()->clientScript->registerScript('JQuery', " 
+        
+        $( document ).ready(function() {
+            update_amounts(); 
+            $('.datepicker').each(function() {
+                $(this).removeClass('hasDatepicker').datepicker();
+            });
+        });
+        
+        $('.amount').blur('change', function() {            
+            update_amounts();            
+        }); 
+            
+        function formatNumber(num,dec,thou,pnt,curr1,curr2,n1,n2) {
+            num=String(num).replace(/,/gi,'')
+            var x = Math.round(num * Math.pow(10,dec));if (x >= 0) n1=n2='';var y = (''+Math.abs(x)).split('');var z = y.length - dec; if (z<0) z--; for(var i = z; i < 0; i++) y.unshift('0'); if (z<0) z = 1; y.splice(z, 0, pnt); if(y[0] == pnt) y.unshift('0'); while (z > 3) {z-=3; y.splice(z,0,thou);}var r = curr1+n1+y.join('')+n2+curr2;return r;
+        }
+        
+        function update_amounts()
+        {
+            /* 
+            var sum = 0;
+            $('#tableAPD > tbody  > tr').each(function() {
+                
+                console.log(this);
+                var amount = parseFloat($(this).find('.amount').val());
+                var keperluan = $(this).find('.invoice').val(); 
+
+                               
+                if(!isNaN(amount) && keperluan !== '')
+                {   
+                    sum += amount;                       
+                    //$(this).val(formatNumber(amount, 0,',','','','','-',''));
+                }
+
+                
+                
+                $('.grandtotal').val(formatNumber(sum, 0,',','','','','-',''));                
+                
+            }); */set_id();
+        }
+
+
+
+
+        
+    ", CClientScript::POS_END);
+
+    ?>
+
+	<p class="note">Fields with <span class="required">*</span> are required.</p>
+
+	<?php echo $form->errorSummary($model); ?>
+        
+        <div class="group">
+            <?php echo Yii::t('ui', 'Info Penerimaan'); ?>
+        </div>
+        <div>
+            <table>
+                <tr>
+                     <td >
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'apSupplier'); ?>
+                            <?php echo $form->hiddenField($model, 'apSupplier'); ?>
+                            <?php echo $form->textField($model, 'apSupplier', array('size' => 40, 'maxlength' => 50)); ?>
+                            <?php echo $form->error($model, 'apSupplier'); ?>
+                        </div>                              
+                    </td>  
+                </tr>
+               <!--  <tr>
+                     <td>
+                        <div class="simple">
+                            <?php   /*echo $form->labelEx($model, 'apSupplier'); ?>
+                            <?php //echo  $form->textField($model, 'apSupplier', array('size' => 40, 'maxlength' => 50, 'placeholder' => '-- Supplier --', )); ?>
+                            <?php 
+                                $this->widget('ext.widgets.select2.XSelect2', array(
+                                    'model'=>$model,
+                                    'attribute'=>'apSupplier',
+                                    'options'=>array(
+                                        'minimumInputLength'=>4,
+                                        'ajax' => array(
+                                            'url'=>$this->createUrl('/request/suggestSupplier'),
+                                            'dataType'=>'json',
+                                            'data' => "js: function(term,page) {
+                                                    return {q: term};
+                                            }",
+                                            'results' => "js: function(data,page){
+                                                    return {results: data};
+                                            }",
+                                        ),                                            
+                                ),                                            
+                                    'htmlOptions'=>array(
+                                            'style'=>'width:200px;',
+                                        'placeholder'=>'-- Nama Supplier --'
+                                    ),
+                                ));                                                                    
+                            ?>
+                            <?php echo $form->error($model, 'apSupplier'); */?>
+                        </div>   
+                    </td>
+                </tr>  -->
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'recNo'); ?>
+                            <?php echo $form->textField($model, 'recNo', array('size' => 40, 'maxlength' => 50, 'placeholder' => '-- Running Number --', 'readonly' => true)); ?>
+                            <?php echo $form->error($model, 'recNo'); ?>
+                        </div>                               
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'recDate'); ?>
+                            <?php echo $form->textField($model, 'recDate', array('size' => 40, 'maxlength' => 50, 'placeholder' => '-- Tgl Penagihan --', 'readonly' => true)); ?>
+
+                            <?php echo $form->error($model, 'recDate'); ?>
+                        </div>                               
+                    </td>              
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'recDateInvoice'); ?>
+                            <?php
+                            $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                                'model' => $model,
+                                'name' => 'recDateInvoice',
+                                'attribute' => 'recDateInvoice',
+                                'options' => array(
+                                    'showAnim' => 'fold', // 'show' (the default), 'slideDown', 'fadeIn', 'fold'
+                                    'showOn' => 'button', // 'focus', 'button', 'both'
+                                    'buttonText' => Yii::t('ui', 'Select form calendar'),
+                                    'buttonImage' => XHtml::imageUrl('calendar.png'),
+                                    'buttonImageOnly' => true,
+                                ),
+                                'htmlOptions' => array(
+                                    'style' => 'width:150px;vertical-align:top',
+                                    'placeholder'=>'-- Tgl Terima Faktur --',
+                                    'readOnly'=>'true',                                    
+                                ),
+                            ));
+                            ?>
+
+                            <?php echo $form->error($model, 'recDateInvoice'); ?>
+                        </div>                               
+                    </td>              
+                </tr>                               
+                <tr>                 
+                    <td >
+                        <div class="simple">
+                             <?php echo $form->labelEx($model, 'apDesc'); ?>
+                            <?php echo $form->textArea($model, 'apDesc', array('cols'=>38,'rows'=>5, 'placeholder' => '-- Keterangan --', 'readonly' => false)); ?>
+                            <?php echo $form->error($model, 'apDesc'); ?>
+                        </div>                               
+                    </td>                                                                    
+                </tr>               
+                 
+            </table>
+        </div>        
+        <br/>
+        
+        <div class="group">
+            <?php echo Yii::t('ui', 'Faktur'); ?>
+        </div>
+        
+        <div>
+        <?php 
+            $this->widget('ext.widgets.tabularinput.XTabularInput', array(
+                'id'=>'tableAPD',
+                'models' => $model->details,
+                'containerTagName' => 'table',
+                'headerTagName' => 'thead',
+                'header' => '
+                            <tr> 
+                                                              
+                                <th>Nomor Invoice</th>
+                                <th>Tgl Invoice</th>
+                                <th>No PO</th>
+                                <th>Total</th>
+                                <th>Keterangan</th>
+                                <th></th>
+                                <th></th> 
+                            </tr>
+                ',
+                'inputContainerTagName' => 'tbody',
+                'inputTagName' => 'tr',
+                'inputView' => '/site/extensions/_tabularAPD',
+                'inputUrl' => $this->createUrl('request/addTabAPD'),
+                'addTemplate' => '<tbody><tr><td colspan="6">{link}</td></tr></tbody>',
+                'addLabel' => Yii::t('ui', 'Tambah'),
+                'addHtmlOptions' => array('class' => 'blue pill full-width'),
+                'removeTemplate' => '<td>{link}</td>',
+                'removeLabel' => Yii::t('ui', 'Hapus'),
+                
+                /*'removeHtmlOptions' => array('class' => 'red pill'),*/
+            ));
+        ?>
+        </div>
+       <tr>
+            <td>
+                <div class="simple">
+                    <?php echo $form->labelEx($model, 'apInvTotal'); ?>
+                    <?php echo $form->textField($model, 'apInvTotal', array('size' => 40, 'maxlength' => 50, 'placeholder' => '-- Total Invoice --', 'readOnly'=>'true', 'class'=>'grandtotal')); ?>
+                    <?php echo $form->error($model, 'apInvTotal'); ?>
+                </div>   
+            </td>
+
+        </tr> 
+        <tr>
+            <td>
+                <div class="simple">
+                    <?php echo CHtml::label('Total invoice diterima', 'apInvTotalDetail'); ?>
+                    <?php 
+
+                    echo $form->textField($model, 'apInvTotalDetail', array('size' => 40, 'maxlength' => 50, 'placeholder' => '-- Total Invoice Diterima --', 'readOnly'=>'true', 'class'=>'grandtotal', 'value' => set_titik($model->apInvTotalDetail))); ?>
+                    <?php echo $form->error($model, 'apInvTotalDetail'); ?>
+                </div>   
+            </td>
+
+        </tr>  
+        <br/>
+        <div class="group">
+            <?php echo Yii::t('ui', 'Kelengkapan Dokumen'); ?>
+        </div>           
+        <div>
+            <table>
+            <tr>
+                <td>
+                <div class="simple">
+                <?php 
+                    // echo $model->apInvCategory;
+                
+                ?>
+                    <?php echo $form->labelEx($model, 'apInvCategory'); ?>
+                    <?php
+                        $this->widget('ext.widgets.select2.XSelect2', array(
+                            'model'=>$model,
+                            'attribute'=>'apInvCategory',
+                            'data'=>  Utility::getInvCategory(),
+                            'events'=>array(
+                                'change'=>"js:function (element) {
+                                    var id=element.val;
+                                    if (id!='') {
+                                        $.ajax('".$this->createUrl('/request/DocList')."', {
+                                            data: {
+                                                id: id,
+                                                status: 1
+                                            }
+                                        }).done(function(data) {
+                                            //console.log (data);
+                                            try{
+                                                var s;
+                                                if(data!==''){
+                                                    s = '<table><tbody>';
+                                                    s = s + data + '</tbody></table>' ;
+                                                }else{
+                                                    s = 'Dokumen tidak ditemukan..!!<br>';
+                                                }
+                                                $('#name-list').html(String(s).replace(/\\\"/gi, '\"'));
+                                                var name_list = document.getElementById('name-list');
+                                                var get_parent = name_list.parentNode;
+                                                get_parent.style.width = '800px';
+                                                var get_tr = name_list.getElementsByTagName('tr');
+                                                var addr = 0;
+                                                for(var i = 0; i < get_tr.length; i++){
+                                                var get_td = get_tr[i].getElementsByTagName('td');
+                                                if(get_td.length > 0){
+                                                var td = document.createElement('td');
+                                                td.innerHTML = '<input name=\"APDocument['+addr+'][descDoc]\" id=\"APDocument_'+addr+'_descDoc\" type=\"text\" style=\"width: 400px;\" placeholder=\"Keterangan..\">';
+                                                addr++;
+                                                get_tr[i].appendChild(td);
+                                                }
+                                                }
+
+                                            }catch(e){alert(e);}
+                                        });
+                                    }
+                                }"
+                            ),
+                            'htmlOptions'=>array(
+                                    'style'=>'width:295px',
+                                    'empty'=>'',
+                                    'placeholder'=>'-- Kategori --'
+                            ),
+                        ));
+                        if(isset($_GET['id']) && $_GET['id'] != "" && $model->apInvCategory != "") {
+                            ?>
+                            <script type="text/javascript">
+                                $.ajax('<?php echo $this->createUrl('/request/DocList'); ?>', {
+                                    data: {
+                                        id: '<?php echo $model->apInvCategory; ?>',
+                                        status: 1
+                                    }
+                                }).done(function(data) {
+                                    //console.log (data);
+                                    try{
+                                        var s;
+                                        if(data!==''){
+                                            s = '<table style="width: 600px;"><tbody>';
+                                            s = s + data + '</tbody></table>' ;
+                                        }else{
+                                            s = 'Dokumen tidak ditemukan..!!<br>';
+                                        }
+                                        $('#name-list').html(String(s).replace(/\\\"/gi, '\"'));
+                                        var name_list = document.getElementById("name-list");
+                                        var get_parent = name_list.parentNode;
+                                        get_parent.style.width = "800px";
+                                        var get_tr = name_list.getElementsByTagName("tr");
+                                        var addr = 0;
+                                        for(var i = 0; i < get_tr.length; i++){
+                                            var get_td = get_tr[i].getElementsByTagName("td");
+                                            if(get_td.length > 0){
+                                        var td = document.createElement("td");
+                                        td.innerHTML = '<input name="APDocument['+addr+'][descDoc]" id="APDocument_'+addr+'_descDoc" type="text" style="width: 400px;" placeholder="Keterangan..">';
+                                        addr++;
+                                        get_tr[i].appendChild(td);
+                                        }
+                                        }
+                                    }catch(e){alert(e);}
+                                        });
+                            </script>
+                            <?php
+                        }
+                    ?>
+                    <?php echo $form->error($model, 'salesAcc'); ?>
+                </div>                               
+                </td>                      
+            </tr> 
+            <tr>
+                <td>
+                    <div class="simple">
+                        <?php echo CHtml::label('Dokumen','Dokumen'); ?>
+                        <div id="name-list"></div>    
+                    </div>
+                </td>
+                
+            </tr> 
+            </table>
+        </div>
+        
+        
+        
+	<div class="row buttons">
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Simpan' : 'Simpan');                 ?>
+            
+	</div>
+
+<?php $this->endWidget();        
+    
+?>
+
+<?php
+function set_titik($param1){
+                        $paramA = (string) $param1;
+                        $explode_titik = explode(".", $paramA);
+                        $paramB = $explode_titik[0];
+                        $jumlah = strlen($paramB);
+                        $result = "";
+                        while(true){
+                            if($jumlah > 3){
+                                $jumlah = $jumlah - 3;
+                                $result = "," . substr($paramB, $jumlah, 3) . $result;
+                            } else {
+                                $result = substr($paramB, 0, $jumlah) . $result;
+                                break;
+                            }
+                        }
+                        $titik = isset($explode_titik[1]) && $explode_titik[1] != "" ? "." . $explode_titik[1] : "";
+                        return $result . $titik;
+                    }
+
+
+?>
+
+</div><!-- form -->
+<script type="text/javascript">
+
+
+    function convert_dots(angka) {
+        var angka_string = angka.toString();
+        var explode_titik = angka_string.split(".");
+        var jumlah_huruf = explode_titik[0].length;
+        var result_0 ="";
+
+        while(true){
+            if(jumlah_huruf > 3){
+                jumlah_huruf = jumlah_huruf - 3;
+                result_0 = "," + explode_titik[0].substr(jumlah_huruf,3) + result_0;
+            }
+            else {
+                result_0 = explode_titik[0].substr(0,jumlah_huruf) + result_0;
+                break;
+            }
+        }
+        // console.log(result_0);
+        var titik = typeof explode_titik[1] !== "undefined" ? "." + explode_titik[1] : "";
+        return result_0 + titik ;
+    }
+
+    var count = 0;
+    function jumlah_checkbox (){
+        var hasil = 0;
+        for (var i = 0; i < 1000; i++){
+            if (document.getElementById("APDetail_" + i + "_rejected")){
+                var nilai = document.getElementById("APDetail_" + i + "_apInvTotal").value;
+                var checkbox = document.getElementById("APDetail_" + i + "_rejected");
+                if(checkbox.checked){
+                    hasil = hasil + Number(nilai.split(",").join(""));
+                }
+            }   
+        }
+        if(document.getElementById("APInvoice_apInvTotalDetail")){
+            document.getElementById("APInvoice_apInvTotalDetail").value = convert_dots(hasil);
+        }
+    }
+    
+    function set_id(){
+        var hasil = 0;
+        for (var i = 0; i < 1000; i++){
+            if (document.getElementById("APDetail_" + i + "_apInvTotal")){
+                var nilai = document.getElementById("APDetail_" + i + "_apInvTotal").value;
+                hasil = hasil + Number(nilai.split(",").join(""));
+            }
+            if (document.getElementById("APDetail_" + i + "_rejected")){
+                document.getElementById("APDetail_" + i + "_rejected").onclick = function(){
+                    jumlah_checkbox(); 
+                };
+            }
+        }
+        if(document.getElementById("APInvoice_apInvTotal")){
+            document.getElementById("APInvoice_apInvTotal").value = convert_dots(hasil);
+        }
+    }
+    function set_a(){
+        var get_a = document.getElementsByTagName("a");
+        for(var i = 0; i < get_a.length; i++){
+            if(get_a[i].getAttribute("class") === "tabular-input-remove"){
+                get_a[i].onclick = function(){
+                    var ints = setInterval(function(){
+                        set_id();
+                        jumlah_checkbox();
+                        clearInterval(ints);
+                    }, 1000);
+                };
+            }
+        }
+    }
+    set_id();
+    set_a();
+    $( document ).ajaxComplete(function() {
+        if(count){
+            set_id();
+            set_a();
+            //console.log("Cek");
+        }
+        count = 1;
+    });
+    
+</script>
+
+<script type="text/javascript">
+
+    function kirim_data(){
+
+        //var APDetail = $('#APDetail_0_apInvNo').val();
+
+        var APDetail = document.getElementById('APDetail_0_apInvNo').value;
+
+        $.ajax({
+            success: function(html){ 
+                console.log('alert'); 
+                console.log(html);
+                if (html == 'alert') {
+                    alert ("Data Sudah ada.");
+                }
+            },
+            type: 'get',
+            url: '/dev/fpp/index.php/en/invoice/ajax?id=' + APDetail + '',
+            /*data: {
+                index: ''
+            },*/
+            cache: false,
+            dataType: 'html'
+        });
+     }
+
+    /*
+    jQuery(document).ready(function($) {
+        $('#inv-header-form').submit(function(){
+            $.ajax({
+                url: '/dev/fpp/index.php/en/invoice/ajax',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(data){
+                    alert(data);
+                    $('[name=APDetail]').val("");
+                    //$('[name=nama]').val("");
+                    $('.kontent').append('Berhasil Meload');
+                },
+                error: function() {
+                    alert("Tidak dapat memproses data !");
+                }
+            });
+             return false;
+        });
+    });*/
+
+</script>

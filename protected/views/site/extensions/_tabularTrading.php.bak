@@ -1,0 +1,28 @@
+<tr>
+    <td>
+        <?php echo CHtml::activeHiddenField($model,"[$index]tradID",array('size'=>10, 'readOnly'=>'readOnly')); ?>
+        <?php echo CHtml::activeHiddenField($model,"[$index]tradStatus",array('size'=>10, 'readOnly'=>'readOnly')); ?>
+        <?php echo CHtml::activeTextField($model,"[$index]tradCode",array('size'=>10, 'readOnly'=>'readOnly')); ?>
+    </td>
+    <td>
+        <?php echo CHtml::activeTextField($model,"[$index]tradDesc",array('size'=>25, 'readOnly'=>'readOnly')); ?>        
+    </td>
+    <td>
+        <?php echo CHtml::activeDropDownList($model,"[$index]tradSource",array("IN"=>"Selling In", "OUT"=>"Selling Out")); ?>
+    </td>
+    <td>
+        <?php echo CHtml::ActiveDropDownList($model,"[$index]tradPeriod",array("M"=>"Monthly", "Y"=>"Yearly"));  ?>
+    </td>
+    <td>
+        <?php echo CHtml::activeTextField($model,"[$index]tradValueFrom",array('size'=>25)); ?>        
+    </td>
+    <td>
+        <?php echo CHtml::activeTextField($model,"[$index]tradValueTo",array('size'=>25)); ?>        
+    </td>
+    <td>
+        <?php echo CHtml::activeTextField($model,"[$index]tradPercentage",array('size'=>3, 'maxlength'=>10)); ?>        
+    </td>    
+    <td>
+        <?php  echo CHtml::activeCheckbox($model, "[$index]isNet", array());   ?>        
+    </td>  
+</tr>

@@ -1,0 +1,201 @@
+<?php
+
+class BQClaim extends CActiveRecord {
+
+    public $keyWord;
+    public $userName;
+    public $deptName;
+    public $branchName;
+    public $fmtDate;
+    public $nonItems;
+    public $items;
+    public $bqAvail;
+    public $tqAvail;
+    public $nameCust;   
+    public $totalAll; 
+    public $voucher ;
+    public $flag;
+    public $stat;
+    public function tableName() {
+        return 'tr_bqClaim';
+    }
+
+    public function rules() {
+        return array(
+            array('bqClaimNo, claimDate, idCust', 'required',),
+            array('bqClaimNo', 'unique',),
+            //array('attachment', 'file', ),
+            array('totalNonItems, totalItems, claimTotal, bqUsed, tqUsed, realisasiTotal, realisasiBQ, realisasiTQ', 'numerical',),
+            array('claimDesc, attachment', 'length', 'max' => 400),
+            array('bqClaimID, bqClaimNo, claimDate, claimType,flag, idCust, claimDesc, deptID, branchID, PIC, status, claimTotal, userName, deptName, branchName, '
+                . 'branchBudget, voucher, totalItems, totalNonItems, bqUsed, tqUsed, realisasiTotal, realisasiBQ, realisasiTQ, claimType2, attachment, statusDesc', 'safe', 'on' => 'search'),
+        );
+    }
+
+    public function relations() {
+        return array(
+        );
+    }
+
+    public function attributeLabels() {
+        return array(
+            'bqClaimNo' => 'Nomor',
+            'claimDate' => 'Tanggal',
+            'idCust' => 'Dealer',            
+            'claimDesc' => 'Keterangan',
+            'deptID' => 'Departemen / Cabang',
+            'PIC' => 'PIC',
+            'status' => 'Status',
+            'totalItems' => 'Total Non-barang',
+            'totalNonItems' => 'Total Barang',
+            'claimTotal' => 'Sub Total',
+            'deptName' => 'Dept - Cabang',
+            'bqAvail' => 'BQ Tersedia - Alokasi',
+            'tqAvail' => 'TQ Tersedia - Alokasi',
+            'totalAll' => 'Total Claim',
+            'bqUsed' => 'BQ',
+            'tqUsed' => 'TQ',
+            'branchID' => 'Budget Cabang',
+            'voucher' => 'No. Voucher',
+            'claimType2' => 'Tipe Klaim'
+            
+            
+        );
+    }
+
+    public function search() {
+        $this->attributeLabels();
+
+//            $idcard = Yii::app()->user->getState('idcard');
+//            $level = Yii::app()->user->getState('level');
+//            $user = Yii::app()->user->name;
+
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('bqClaimNo', $this->keyWord, true, 'OR');
+        $criteria->compare('deptID', $this->keyWord, true, 'OR');
+        $criteria->compare('PIC', $this->keyWord, true, 'OR');
+
+//            if($level !== "Admin" AND $level !== "Finance"  )
+//            {
+//                $criteria->addCondition(" a.reqSales = '".$idcard."'");
+//            }
+//            if($level == "Finance"  )
+//            {
+//                $criteria->addCondition(" persetujuan is null ");
+//            }
+
+        $criteria->alias = 'a';
+        $criteria->select = " a.bqClaimID, a.bqClaimNo, a.claimDate, a.claimDesc, a.deptID, a.PIC, a.status, a.claimTotal, e.userName, e.nameDept deptName, bqUsed, tqUsed, a.idCust + ' - ' + c.NAMECUST as idCust,"
+                . " realisasiTQ, realisasiBQ, realisasiTotal, "
+                . " case a.status  "
+                . "     when 1 then 'Disetujui' "
+                . "     when 0 then 'Draft' "
+                . "     when 5 then 'Close' "
+                . "     else 'Ditolak' end as stat, a.status as flag ";
+        $criteria->join = " left join vwEmployee e on a.PIC = e.idCard "
+                . "          left join sgtdat..arcus c on c.idcust = a.idCust ";
+
+        return new ActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'sort' => array(
+                'defaultOrder' => 'bqClaimNo DESC',
+            )
+        ));
+    }
+    
+    public function verify() {
+        $this->attributeLabels();
+
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('bqClaimNo', $this->keyWord, true, 'OR');
+        $criteria->compare('deptID', $this->keyWord, true, 'OR');
+        $criteria->compare('PIC', $this->keyWord, true, 'OR');
+        $criteria->addCondition(" a.status <> 3 ");
+
+        $criteria->alias = 'a';
+        $criteria->select = " a.bqClaimID, a.bqClaimNo, a.claimDate, a.claimDesc, a.deptID, a.PIC, a.status, a.claimTotal, e.userName, e.nameDept deptName, bqUsed, tqUsed, a.idCust + ' - ' + c.NAMECUST as idCust,"
+                . " case a.status  "
+                . "     when 1 then 'Disetujui' "
+                . "     when 0 then 'Draft' "
+                . "     else 'Ditolak' end as status";
+        $criteria->join = " left join vwEmployee e on a.PIC = e.idCard "
+                . "          left join sgtdat..arcus c on c.idcust = a.idCust ";
+
+        return new ActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'sort' => array(
+                'defaultOrder' => 'bqClaimNo DESC',
+            )
+        ));
+    }
+    
+    public function getHeader($id) {
+        $this->attributeLabels();
+
+//            $idcard = Yii::app()->user->getState('idcard');
+//            $level = Yii::app()->user->getState('level');
+//            $user = Yii::app()->user->name;
+
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('bqClaimID', $id, true);
+
+        $criteria->alias = 'a';
+        $criteria->select = " a.bqClaimID, a.bqClaimNo, a.claimDate, a.claimDesc, a.deptID, a.PIC, a.status, a.claimTotal, e.userName, e.nameDept deptName, bqUsed, tqUsed, a.idCust + ' - ' + c.NAMECUST as idCust,"
+                . " totalNonItems, case a.status  "
+                . "     when 1 then 'Disetujui' "
+                . "     when 0 then 'Draft' "
+                . "     else 'Ditolak' end as status";
+        $criteria->join = " left join vwEmployee e on a.PIC = e.idCard "
+                . "          left join sgtdat..arcus c on c.idcust = a.idCust ";
+
+         return $this->find($criteria);
+    }
+
+//        public function getRequest($id)
+//	{
+//            $this->attributeLabels();
+//            
+//            $criteria=new CDbCriteria;    
+//            $criteria->compare('reqID',$id,true);
+//
+////            if($level !== "Admin" AND $level !== "Finance"  )
+////            {
+////                $criteria->addCondition(" fppUser = '".$idcard."'");
+////            }
+////            if($level == "Finance"  )
+////            {
+////                $criteria->addCondition(" persetujuan is null ");
+////            }
+//                        
+//            $criteria->alias = 'a';                            
+//            $criteria->select=" a.finRet, a.finRetDate, a.realisasi, isnull(a.retValue,0) retValue, isnull(a.retCount,0) retCount, "
+//                    . "a.returnDate, a.reqID, a.reqNumber, a.reqSales, e.userName salesName, a.reqDate, a.salesRcv, a.salesRcvDate, a.finRcv,"
+//                    . " a.finRcvDate, a.invCount, a.invValue, a.revValue, a.revCount";
+//            $criteria->join = " left join vwEmployee e on e.idCard = a.reqSales ";
+//
+//            return $this->find($criteria);
+//	}    
+
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    protected function beforeSave() {
+        if (parent::beforeSave()) {
+            if ($this->isNewRecord) {
+                $this->inputTime = new CDbExpression('getdate()');
+                $this->inputUN = Yii::app()->user->name;
+                $this->modifTime = new CDbExpression('getdate()');
+                $this->modifUN = Yii::app()->user->name;
+            } else
+                $this->modifTime = new CDbExpression('getdate()');
+            $this->modifUN = Yii::app()->user->name;
+            return true;
+        } else
+            return false;
+    }
+
+}

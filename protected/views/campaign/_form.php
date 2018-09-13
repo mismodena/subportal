@@ -1,0 +1,170 @@
+<div class="form">
+
+<?php $form=$this->beginWidget('CActiveForm', array(
+	'id'=>'campaign-form',
+	// Please note: When you enable ajax validation, make sure the corresponding
+	// controller action is handling ajax validation correctly.
+	// There is a call to performAjaxValidation() commented in generated controller code.
+	// See class documentation of CActiveForm for details on this.
+	'enableAjaxValidation'=>true,
+        'htmlOptions'=>array('enctype'=>'multipart/form-data'),
+)); ?>
+
+	<p class="note">Fields with <span class="required">*</span> are required.</p>
+
+	<?php echo $form->errorSummary($model); ?>
+        <div class="group">
+            <?php echo Yii::t('ui', 'Data Promo'); ?>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'campaignNo'); ?>
+                            <?php echo $form->textField($model, 'campaignNo', array('size' => 40, 'maxlength' => 50, 'placeholder' => 'Nomor Promo', )); ?>
+                            <?php echo $form->error($model, 'campaignNo'); ?>
+                        </div>                               
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'campaignName'); ?>                            
+                            <?php echo $form->textField($model, 'campaignName', array('size' => 40, 'maxlength' => 50, 'placeholder' => 'Nama Promo',)); ?>
+                            <?php echo $form->error($model, 'campaignName'); ?>
+                        </div>                               
+                    </td>                        
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'campaignFrom'); ?>                           
+                            <?php
+                            $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                                'model' => $model,
+                                'name' => 'campaignFrom',
+                                'attribute' => 'campaignFrom',
+                                'options' => array(
+                                    'showAnim' => 'fold', // 'show' (the default), 'slideDown', 'fadeIn', 'fold'
+                                    'showOn' => 'button', // 'focus', 'button', 'both'
+                                    'buttonText' => Yii::t('ui', 'Select form calendar'),
+                                    'buttonImage' => XHtml::imageUrl('calendar.png'),
+                                    'buttonImageOnly' => true,
+                                ),
+                                'htmlOptions' => array(
+                                    'style' => 'width:150px;vertical-align:top',
+                                    'placeholder'=>'Awal periode',
+                                    'readOnly'=>'true',                                    
+                                ),
+                            ));
+                            ?>
+                            &nbsp; s/d &nbsp;
+                            <?php
+                            $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                                'model' => $model,
+                                'name' => 'campaignTo',
+                                'attribute' => 'campaignTo',
+                                'options' => array(
+                                    'showAnim' => 'fold', // 'show' (the default), 'slideDown', 'fadeIn', 'fold'
+                                    'showOn' => 'button', // 'focus', 'button', 'both'
+                                    'buttonText' => Yii::t('ui', 'Select form calendar'),
+                                    'buttonImage' => XHtml::imageUrl('calendar.png'),
+                                    'buttonImageOnly' => true,
+                                ),
+                                'htmlOptions' => array(
+                                    'style' => 'width:150px;vertical-align:top',
+                                    'placeholder'=>'Akhir periode',
+                                    'readOnly'=>'true',                                    
+                                ),
+                            ));
+                            ?>
+                            <?php echo $form->error($model, 'campaignFrom'); ?>
+                        </div>                               
+                    </td>                        
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'CNStartDate'); ?>                           
+                            <?php
+                            $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+                                'model' => $model,
+                                'name' => 'CNStartDate',
+                                'attribute' => 'CNStartDate',
+                                'options' => array(
+                                    'showAnim' => 'fold', // 'show' (the default), 'slideDown', 'fadeIn', 'fold'
+                                    'showOn' => 'button', // 'focus', 'button', 'both'
+                                    'buttonText' => Yii::t('ui', 'Select form calendar'),
+                                    'buttonImage' => XHtml::imageUrl('calendar.png'),
+                                    'buttonImageOnly' => true,
+                                ),
+                                'htmlOptions' => array(
+                                    'style' => 'width:150px;vertical-align:top',
+                                    'placeholder'=>'Tanggal berlaku CN',
+                                    'readOnly'=>'true',                                    
+                                ),
+                            ));
+                            ?>
+                            <?php echo $form->error($model, 'CNStartDate'); ?>
+                        </div>                               
+                    </td>                        
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'campaignCategory'); ?>
+                            <?php 
+                                    $this->widget('ext.widgets.select2.XSelect2', array(
+                                        'model'=>$model,
+                                        'attribute'=>'campaignCategory',
+                                        'data'=>  Utility::getBranch(),
+                                        'htmlOptions'=>array(
+                                                'style'=>'width:295px',
+                                                'empty'=>'',
+                                                'placeholder'=>'-- Kategori --'
+                                        ),
+                                    ));
+                            ?>
+                            <?php echo $form->error($model, 'campaignCategory'); ?>
+                        </div>                               
+                    </td>                        
+                </tr>
+                <tr>
+                    <td>
+                        <div class="simple">
+                            <?php echo $form->labelEx($model, 'campaignDesc'); ?>
+                            <?php echo $form->textArea($model, 'campaignDesc', array('cols'=>40,'rows'=>5, 'placeholder' => 'keterangan')); ?>
+                            <?php echo $form->error($model, 'campaignDesc'); ?>
+                        </div>                               
+                    </td>                        
+                </tr>
+            </table>
+        </div>
+        
+        <div class="group">
+            <?php echo Yii::t('ui', 'Rincian'); ?>
+        </div>
+        
+        <div>
+            <table>
+                <tr>
+                    <td>            
+                        <div class="simple">
+                            <?php echo $form->labelEx($model,'excelFiles'); ?>
+                            <?php echo $form->fileField($model,'excelFiles',array('size'=>50,'maxlength'=>50, 'accept'=>'application/vnd.ms-excel')); ?>
+                            <?php echo $form->error($model,'excelFiles'); ?>
+                        </div>                            
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+	<div class="row buttons">
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Upload' : 'Simpan');                 ?>
+	</div>
+
+<?php $this->endWidget(); ?>
+
+</div><!-- form -->

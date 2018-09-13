@@ -1,0 +1,59 @@
+<?php
+$this->breadcrumbs = array(
+    'Laporan Per Q',
+);
+
+
+Yii::app()->clientScript->registerScript('search', "
+ 
+$('.search-form form').submit(function(){
+	$('#master-trading-grid').yiiGridView('update', {
+		data: $(this).serialize()
+	});
+	return false;
+});
+");
+?>
+
+<h1>Laporan Per Q</h1>
+
+<div class="search-form">
+    <?php
+    $this->renderPartial('_rptQ', array(
+        'model' => $model,
+    ));
+    ?>
+</div><!-- search-form -->
+
+<?php
+$this->widget('zii.widgets.grid.CGridView', array(
+    'id' => 'master-trading-grid',
+    'dataProvider' => $model->rptQ(),
+    'enableSorting' => false,
+    //'filter'=>$model,
+    'columns' => array(
+        array(
+            "name" => "Kode",
+            "value" => '$data->balanceReff',
+            "type" => "raw",
+        ),
+        array(
+            "name" => "Cabang",
+            "value" => '$data->nameCust',
+            "type" => "raw",
+        ),
+        array(
+            "name" => "BQ",
+            "value" => '(CHtml::link("Rp. ".number_format($data["bqValue"]),Yii::app()->createUrl("bq/expQ",array("id"=>trim($data->balanceReff), "branch"=>trim($data->idBranch), "type"=>"BQ", "nameC"=>trim($data->nameCust))))) ',
+            'htmlOptions' => array('style' => 'text-align:right;'),
+            "type" => "raw",
+        ),
+        array(
+            "name" => "TQ",
+            "value" => '"Rp. ".number_format($data["tqValue"]) ',
+            'htmlOptions' => array('style' => 'text-align:right;'),
+            "type" => "raw",
+        ),
+    ),
+));
+?>
